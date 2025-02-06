@@ -1,20 +1,21 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import VideoUpload from './VideoUpload';
+import Feed from './Feed';
+import Navbar from './Navbar';
 
 function App() {
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h1>Velkommen til din TikTok-klone!</h1>
-      <video
-        src="testvideo.mp4"
-        controls
-        style={{
-          width: '100%',
-          maxWidth: '400px', // Passer inn i midten
-          borderRadius: '10px',
-        }}
-      />
-      <p>Se og last opp videoer her!</p>
-    </div>
+    <Router>
+      <div style={{ width: '100vw', height: '177.78vw', maxHeight: '100vh', maxWidth: '56.25vh' }}>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Feed />} />
+          <Route path="/upload" element={<VideoUpload />} />
+          <Route path="/profile" element={<div>Profilside (kommer snart)</div>} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
