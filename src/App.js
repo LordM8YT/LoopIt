@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import VideoUpload from './VideoUpload';
 import Feed from './Feed';
 import Navbar from './Navbar';
+import Auth from './Auth';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Feed />} />
           <Route path="/upload" element={<VideoUpload />} />
           <Route path="/profile" element={<div>Profilside (kommer snart)</div>} />
+          <Route path="/auth" element={<Auth />} />
         </Routes>
       </div>
     </Router>
