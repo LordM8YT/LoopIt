@@ -4,6 +4,7 @@ import VideoUpload from './VideoUpload';
 import Feed from './Feed';
 import Navbar from './Navbar';
 import Auth from './Auth';
+import Profile from './Profile';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/upload" element={<VideoUpload />} />
           <Route path="/profile" element={<div>Profilside (kommer snart)</div>} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/profile/:userId" element={<Profile />} />
         </Routes>
       </div>
     </Router>

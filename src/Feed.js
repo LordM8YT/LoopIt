@@ -1,5 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import supabase from './supabaseClient';
+import { Link } from 'react-router-dom';
+
+const VideoCard = ({ video }) => {
+  return (
+    <div className="video-card">
+      <Link to={`/profile/${video.user_id}`} className="flex items-center space-x-2">
+        <img src={video.avatar_url} alt="Profile" className="w-10 h-10 rounded-full" />
+        <span className="font-bold">{video.username}</span>
+      </Link>
+      <video src={video.video_url} controls className="w-full" />
+    </div>
+  );
+};
+
 
 function Feed() {
   const [videos, setVideos] = useState([]);
