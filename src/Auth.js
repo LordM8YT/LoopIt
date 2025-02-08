@@ -1,91 +1,109 @@
-import { useState, useEffect } from "react";
-import supabase from "./supabaseClient";
+import { useState, useEffect } from 'react';
+import supabase from './supabaseClient';
 
 const Auth = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(true); // Start med "loading"
+  const [error, setError] = useState('');
   const [user, setUser] = useState(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  // Sjekk om brukeren allerede er logget inn
   useEffect(() => {
-    const checkUser = async () => {
+    const getUser = async () => {
+      console.log("⏳ Henter brukerdata...");
       const { data, error } = await supabase.auth.getUser();
+
       if (error) {
-        console.error("Error fetching user:", error.message);
+        console.error("🚨 Feil ved henting av bruker:", error.message);
       } else {
+        console.log("✅ Brukerdata funnet:", data.user);
         setUser(data.user);
       }
+      
+      setLoading(false); // Ferdig med å laste
     };
-    checkUser();
+
+    getUser();
   }, []);
 
-  // Registrer bruker
-  const handleSignUp = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      console.error("Feil ved registrering:", error.message);
-    } else {
-      setUser(data.user);
-      console.log("Registrering vellykket:", data);
-    }
-  };
-
-  // Logg inn bruker
   const handleLogin = async () => {
+    setLoading(true);
+    setError('');
+
+    console.log("🔐 Prøver å logge inn med", email);
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      console.error("Feil ved innlogging:", error.message);
+      console.error("🚨 Feil ved innlogging:", error.message);
+      setError(error.message);
     } else {
+      console.log("✅ Innlogging vellykket:", data.user);
       setUser(data.user);
-      console.log("Innlogging vellykket:", data);
     }
+
+    setLoading(false);
   };
 
-  // Logg ut bruker
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
+  const handleSignUp = async () => {
+    setLoading(true);
+    setError('');
+
+    console.log("🆕 Registrerer ny bruker med", email);
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
     if (error) {
-      console.error("Feil ved utlogging:", error.message);
+      console.error("🚨 Feil ved registrering:", error.message);
+      setError(error.message);
     } else {
-      setUser(null);
-      console.log("Utlogging vellykket");
+      console.log("✅ Bruker registrert:", data.user);
+      setUser(data.user);
     }
+
+    setLoading(false);
   };
+
+  if (loading) {
+    return <p>⏳ Laster inn...</p>;
+  }
+
+  if (user) {
+    return (
+      <div>
+        <p>✅ Du er logget inn som {user.email}</p>
+        <button onClick={async () => {
+          await supabase.auth.signOut();
+          setUser(null);
+        }}>Logg ut</button>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {user ? (
-        <div>
-          <p>Velkommen, {user.email}!</p>
-          <button onClick={handleLogout}>Logg ut</button>
-        </div>
-      ) : (
-        <div>
-          <h2>Logg inn eller registrer deg</h2>
-          <input
-            type="email"
-            placeholder="E-post"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Passord"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button onClick={handleSignUp}>Registrer</button>
-          <button onClick={handleLogin}>Logg inn</button>
-        </div>
-      )}
+      <h2>Logg inn eller registrer deg</h2>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <input 
+        type="email" 
+        placeholder="E-post" 
+        value={email} 
+        onChange={(e) => setEmail(e.target.value)} 
+      />
+      <input 
+        type="password" 
+        placeholder="Passord" 
+        value={password} 
+        onChange={(e) => setPassword(e.target.value)} 
+      />
+      <button onClick={handleLogin} disabled={loading}>Logg inn</button>
+      <button onClick={handleSignUp} disabled={loading}>Registrer deg</button>
     </div>
   );
 };
